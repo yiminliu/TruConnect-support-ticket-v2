@@ -17,13 +17,13 @@ import com.trc.user.User;
 public class CustomerTicket extends Ticket {
 	private static final long serialVersionUID = -8249415459905630871L;
 	private User customer;
-	private User asignee;
+	private User assignee;
 
 	public CustomerTicket() {
 		this.type = TicketType.CUSTOMER;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "customer", insertable = true, updatable = true, nullable = true)
 	public User getCustomer() {
@@ -37,12 +37,12 @@ public class CustomerTicket extends Ticket {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "assignee", insertable = true, updatable = true, nullable = true)
-	public User getAsignee() {
-		return asignee;
+	public User getAssignee() {
+		return assignee;
 	}
 
-	public void setAsignee(User asignee) {
-		this.asignee = asignee;
+	public void setAssignee(User assignee) {
+		this.assignee = assignee;
 	}
 
 }
