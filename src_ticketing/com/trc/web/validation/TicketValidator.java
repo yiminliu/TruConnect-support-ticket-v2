@@ -49,8 +49,10 @@ public class TicketValidator implements Validator {
 
 	private void checkAgentTicket(Ticket ticket, Errors errors) {
 		AgentTicket agentTicket = (AgentTicket) ticket;
+		if(agentTicket != null && agentTicket.getTitle() == null)
+			errors.rejectValue("Title", "ticket.title.required", "Title is required");
 		if(agentTicket != null && agentTicket.getPriority() == null)
-			errors.rejectValue("Priority", "ticket.priority.required", "Please select a priority");
+			errors.rejectValue("Priority", "ticket.priority.required", "Please select a priority");		
 	}
 
 	private void checkCustomerTicket(Ticket ticket, Errors errors) {
