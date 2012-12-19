@@ -15,7 +15,6 @@ import com.trc.domain.ticket.CustomerTicket;
 import com.trc.domain.ticket.InquiryTicket;
 import com.trc.domain.ticket.Ticket;
 import com.trc.domain.ticket.TicketNote;
-import com.trc.domain.ticket.TicketPriority;
 import com.trc.domain.ticket.TicketStatus;
 import com.trc.domain.ticket.TicketType;
 import com.trc.manager.UserManager;
@@ -42,7 +41,7 @@ public class TicketDao extends HibernateDaoSupport implements TicketDaoModel {
 		if (ticket.getStatus() == null || ticket.getStatus() != TicketStatus.OPEN)
 			ticket.setStatus(TicketStatus.OPEN);
 		ticket.setCreatedDate(ticket.getCreatedDate());		
-		if(ticket.getClass().equals(CustomerTicket.class)){
+		if(ticket.getClass().equals(CustomerTicket.class) || ticket.getClass().equals(AgentTicket.class) || ticket.getClass().equals(AdminTicket.class)){
 			id = createCustomerTicket((CustomerTicket) ticket);
 		}
 		else if(ticket.getClass().equals(InquiryTicket.class)){
@@ -219,20 +218,23 @@ public class TicketDao extends HibernateDaoSupport implements TicketDaoModel {
 		HibernateTemplate ht = getHibernateTemplate();
 		if (ticket.getCustomer() != null)
 			customer = userManager.getUserByUsername(ticket.getCustomer().getUsername());//have a persistent customer object
-		else {  //retrieve customer from session
-		 	if(ticket.getClass().equals(CustomerTicket.class)){	
-				customer = userManager.getCurrentUser();
-				ticket.setType(TicketType.CUSTOMER);
-			}	
+		else {  //retrieve customer from session		 	
 			if(ticket.getClass().equals(AgentTicket.class) || ticket.getClass().equals(AdminTicket.class)){
 				if(ticket.getClass().equals(AdminTicket.class))
                    ticket.setType(TicketType.ADMIN);
 				if(ticket.getClass().equals(AgentTicket.class))
 	               ticket.setType(TicketType.AGENT);
-				customer = userManager.getLoggedInUser();
-			    if (customer != null)
-			        getHibernateTemplate().persist(customer);
+				customer = userManager.getLoggedInUser();			    
 			}
+			else {
+				ticket.setType(TicketType.CUSTOMER);
+				customer = userManager.getCurrentUser();
+			}
+			//if (customer != null)
+		     //   getHibernateTemplate().persist(customer);		
+			//customer = userManager.getUserById(customer.getUserId());//have a persistent customer object
+			customer = userManager.getUserByUsername(customer.getUsername());//have a persistent customer object
+			
 		}	
 		ticket.setCustomer(customer);
 		if(ticket.getClass().equals(AgentTicket.class)){
@@ -258,9 +260,8 @@ public class TicketDao extends HibernateDaoSupport implements TicketDaoModel {
 			else if ((TicketType.INQUIRY).equals(agentTicket.getType()))
 				creator = null;
 			if ((TicketType.ADMIN).equals(agentTicket.getType()) || (TicketType.AGENT).equals(agentTicket.getType()))
-			    creator = userManager.getSessionUser();
-			if(creator != null)
-			   getHibernateTemplate().persist(creator);			
+			    creator = userManager.getSessionControllingUser();
+			creator = userManager.getUserById(creator.getUserId());				
 		}	
 		agentTicket.setCreator(creator);		
 		return agentTicket;
