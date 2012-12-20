@@ -1,6 +1,7 @@
 package com.trc.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class TicketDao extends HibernateDaoSupport implements TicketDaoModel {
 	@Override
 	public void updateTicket(Ticket ticket) {
 		validateTicket(ticket);
-		//ticket.setLastModifiedDate(new Timestamp(System.currentTimeMillis()));
+		ticket.setLastModifiedDate(new Date());
 		getHibernateTemplate().saveOrUpdate(ticket);
 	}
 
@@ -79,7 +80,7 @@ public class TicketDao extends HibernateDaoSupport implements TicketDaoModel {
 	public void closeTicket(Ticket ticket) {
 		validateTicket(ticket);
 		ticket.setStatus(TicketStatus.CLOSED);
-		//ticket.setLastModifiedDate(new Timestamp(System.currentTimeMillis()));
+		ticket.setLastModifiedDate(new Date());
 		updateTicket(ticket);
 	}
 
@@ -87,7 +88,7 @@ public class TicketDao extends HibernateDaoSupport implements TicketDaoModel {
 	public void resolveTicket(Ticket ticket) {
 		validateTicket(ticket);
 		ticket.setStatus(TicketStatus.RESOLVED);
-		//ticket.setLastModifiedDate(new Timestamp(System.currentTimeMillis()));
+		ticket.setLastModifiedDate(new Date());
 		updateTicket(ticket);
 	}
 
@@ -95,7 +96,7 @@ public class TicketDao extends HibernateDaoSupport implements TicketDaoModel {
 	public void rejectTicket(Ticket ticket) {
 		validateTicket(ticket);
 		ticket.setStatus(TicketStatus.REJECTED);
-		//ticket.setLastModifiedDate(new Timestamp(System.currentTimeMillis()));
+		ticket.setLastModifiedDate(new Date());
 		updateTicket(ticket);
 	}
 
@@ -103,7 +104,7 @@ public class TicketDao extends HibernateDaoSupport implements TicketDaoModel {
 	public void reopenTicket(Ticket ticket) {
 		validateTicket(ticket);
 		ticket.setStatus(TicketStatus.REOPEN);
-		//ticket.setLastModifiedDate(new Timestamp(System.currentTimeMillis()));
+		ticket.setLastModifiedDate(new Date());
 		updateTicket(ticket);
 	}
 
@@ -230,8 +231,6 @@ public class TicketDao extends HibernateDaoSupport implements TicketDaoModel {
 				ticket.setType(TicketType.CUSTOMER);
 				customer = userManager.getCurrentUser();
 			}
-			//if (customer != null)
-		     //   getHibernateTemplate().persist(customer);		
 			//customer = userManager.getUserById(customer.getUserId());//have a persistent customer object
 			customer = userManager.getUserByUsername(customer.getUsername());//have a persistent customer object
 			
@@ -261,7 +260,8 @@ public class TicketDao extends HibernateDaoSupport implements TicketDaoModel {
 				creator = null;
 			if ((TicketType.ADMIN).equals(agentTicket.getType()) || (TicketType.AGENT).equals(agentTicket.getType()))
 			    creator = userManager.getSessionControllingUser();
-			creator = userManager.getUserById(creator.getUserId());				
+			if(creator != null)
+			   creator = userManager.getUserById(creator.getUserId());				
 		}	
 		agentTicket.setCreator(creator);		
 		return agentTicket;
