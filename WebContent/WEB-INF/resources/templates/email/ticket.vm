@@ -1,0 +1,14 @@
+<html>
+<body >
+<div>
+	<div style="border-bottom:1px solid #999; margin-bottom:15px; font-size:15px;">
+		<img src="https://activate.truconnect.com/static/images/logo/logo_s1.jpg">
+	</div>
+	<div style="width: 95%; margin:0px auto;">
+		<h3 style="color:gray;">Response to you ticket ${ticketId}</h3>
+		<p>${message}</p>
+		<p>If you have any further questions, please visit our <a href="http://support.truconnect.com">support page</a></p>
+	</div>
+</div>
+</body>
+</html>
